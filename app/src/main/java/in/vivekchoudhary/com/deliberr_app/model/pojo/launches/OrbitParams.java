@@ -1,5 +1,5 @@
 
-package in.vivekchoudhary.com.deliberr_app.model.pojo;
+package in.vivekchoudhary.com.deliberr_app.model.pojo.launches;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -14,7 +14,7 @@ public class OrbitParams {
     private String regime;
     @SerializedName("longitude")
     @Expose
-    private Integer longitude;
+    private Double longitude;
     @SerializedName("semi_major_axis_km")
     @Expose
     private Double semiMajorAxisKm;
@@ -35,7 +35,7 @@ public class OrbitParams {
     private Double periodMin;
     @SerializedName("lifespan_years")
     @Expose
-    private Integer lifespanYears;
+    private Double lifespanYears;
     @SerializedName("epoch")
     @Expose
     private String epoch;
@@ -68,11 +68,11 @@ public class OrbitParams {
         this.regime = regime;
     }
 
-    public Integer getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Integer longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -124,11 +124,11 @@ public class OrbitParams {
         this.periodMin = periodMin;
     }
 
-    public Integer getLifespanYears() {
+    public Double getLifespanYears() {
         return lifespanYears;
     }
 
-    public void setLifespanYears(Integer lifespanYears) {
+    public void setLifespanYears(Double lifespanYears) {
         this.lifespanYears = lifespanYears;
     }
 

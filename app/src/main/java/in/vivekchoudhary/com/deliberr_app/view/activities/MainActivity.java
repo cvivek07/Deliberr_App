@@ -1,6 +1,7 @@
 package in.vivekchoudhary.com.deliberr_app.view.activities;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -11,13 +12,21 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import in.vivekchoudhary.com.deliberr_app.R;
 import in.vivekchoudhary.com.deliberr_app.model.DataRepository;
+import in.vivekchoudhary.com.deliberr_app.model.pojo.launches.JsonRoot;
+import in.vivekchoudhary.com.deliberr_app.model.pojo.launches.Launch;
 import in.vivekchoudhary.com.deliberr_app.presenter.MainActivityPresenter;
 import in.vivekchoudhary.com.deliberr_app.presenter.contracts.MainActivityContract;
-import in.vivekchoudhary.com.deliberr_app.util.Injection;
+import in.vivekchoudhary.com.deliberr_app.util.RetrofitBuilder;
 import in.vivekchoudhary.com.deliberr_app.util.MainUiThread;
 import in.vivekchoudhary.com.deliberr_app.util.ThreadExecutor;
 import in.vivekchoudhary.com.deliberr_app.util.mvp.BaseView;
@@ -32,6 +41,7 @@ public class MainActivity extends BaseView implements
     private ActionBar actionBar;
     private Bundle bundle;
     private Fragment currFragment;
+    private JsonRoot jsonRoot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +51,7 @@ public class MainActivity extends BaseView implements
         actionBar.setTitle("Launches");
         ThreadExecutor threadExecutor = ThreadExecutor.getInstance();
         MainUiThread mainUiThread = MainUiThread.getInstance();
-        DataRepository dataRepository = Injection.provideDataRepository(mainUiThread,
+        DataRepository dataRepository = RetrofitBuilder.provideDataRepository(mainUiThread,
                 threadExecutor);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigationView);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -85,9 +95,12 @@ public class MainActivity extends BaseView implements
     }
 
     @Override
-    public void showData(JsonObject jsonObject) {
+    public void showData(JsonArray jsonObject) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<Launch>>(){}.getType();
+        List<Launch> launchList  = gson.fromJson(jsonObject.toString(), listType);
         bundle = new Bundle();
-        if(jsonObject!=null) bundle.putString(JSON_DATA, jsonObject.toString());
+        if(jsonObject!=null) bundle.putParcelableArrayList(JSON_DATA, (ArrayList<? extends Parcelable>) launchList);
         currFragment = new LaunchFragment();
         currFragment.setArguments(bundle);
         FragmentManager manager = getSupportFragmentManager();

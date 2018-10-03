@@ -12,10 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
+import java.util.List;
 
 import in.vivekchoudhary.com.deliberr_app.R;
-import in.vivekchoudhary.com.deliberr_app.model.pojo.JsonRoot;
+import in.vivekchoudhary.com.deliberr_app.model.pojo.launches.Launch;
 import in.vivekchoudhary.com.deliberr_app.util.ItemClickSupport;
 import in.vivekchoudhary.com.deliberr_app.view.activities.MainActivity;
 import in.vivekchoudhary.com.deliberr_app.view.adapters.RecViewAdapter;
@@ -29,8 +29,8 @@ public class LaunchFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private JsonRoot jsonRoot;
-    private String json_data;
+    private List<Launch> launchList;
+
 
 
     @Override
@@ -40,16 +40,14 @@ public class LaunchFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (getArguments()!=null) json_data = getArguments().getString(MainActivity.JSON_DATA);
+        if (getArguments()!=null) launchList = getArguments().getParcelableArrayList(MainActivity.JSON_DATA);
         View view = inflater.inflate(R.layout.launch_fragment, container, false);
         recyclerView = view.findViewById(R.id.launchesrecview);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        Gson gson = new Gson();
-        jsonRoot= gson.fromJson(json_data, JsonRoot.class);
-        mAdapter = new RecViewAdapter(getContext(),jsonRoot);
+        mAdapter = new RecViewAdapter(getContext(),launchList);
         recyclerView.setAdapter(mAdapter);
         return view;
 
@@ -63,7 +61,7 @@ public class LaunchFragment extends Fragment {
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 ((MainActivity)getActivity()).getSupportActionBar().setTitle("Launch Details");
                 Bundle bundle = new Bundle();
-                bundle.putParcelable(DETAIL_DATA, jsonRoot);
+                bundle.putParcelable(DETAIL_DATA, launchList.get(position));
                 Fragment frag = new DetailFragment();
                 frag.setArguments(bundle);
                 FragmentManager manager = getFragmentManager();

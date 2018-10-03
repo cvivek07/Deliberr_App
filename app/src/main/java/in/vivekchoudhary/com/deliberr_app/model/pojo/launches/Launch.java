@@ -1,5 +1,5 @@
 
-package in.vivekchoudhary.com.deliberr_app.model.pojo;
+package in.vivekchoudhary.com.deliberr_app.model.pojo.launches;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,7 +8,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class JsonRoot implements Parcelable {
+public class Launch implements Parcelable {
 
     @SerializedName("flight_number")
     @Expose
@@ -71,7 +71,7 @@ public class JsonRoot implements Parcelable {
     @Expose
     private Integer staticFireDateUnix;
 
-    protected JsonRoot(Parcel in) {
+    protected Launch(Parcel in) {
         if (in.readByte() == 0) {
             flightNumber = null;
         } else {
@@ -104,15 +104,15 @@ public class JsonRoot implements Parcelable {
         }
     }
 
-    public static final Creator<JsonRoot> CREATOR = new Creator<JsonRoot>() {
+    public static final Creator<Launch> CREATOR = new Creator<Launch>() {
         @Override
-        public JsonRoot createFromParcel(Parcel in) {
-            return new JsonRoot(in);
+        public Launch createFromParcel(Parcel in) {
+            return new Launch(in);
         }
 
         @Override
-        public JsonRoot[] newArray(int size) {
-            return new JsonRoot[size];
+        public Launch[] newArray(int size) {
+            return new Launch[size];
         }
     };
 

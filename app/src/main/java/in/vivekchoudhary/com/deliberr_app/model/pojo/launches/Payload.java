@@ -1,5 +1,5 @@
 
-package in.vivekchoudhary.com.deliberr_app.model.pojo;
+package in.vivekchoudhary.com.deliberr_app.model.pojo.launches;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
@@ -12,7 +12,7 @@ public class Payload {
     private String payloadId;
     @SerializedName("norad_id")
     @Expose
-    private List<Integer> noradId = null;
+    private List<Double> noradId = null;
     @SerializedName("reused")
     @Expose
     private Boolean reused;
@@ -30,7 +30,7 @@ public class Payload {
     private String payloadType;
     @SerializedName("payload_mass_kg")
     @Expose
-    private Integer payloadMassKg;
+    private Double payloadMassKg;
     @SerializedName("payload_mass_lbs")
     @Expose
     private Double payloadMassLbs;
@@ -49,11 +49,11 @@ public class Payload {
         this.payloadId = payloadId;
     }
 
-    public List<Integer> getNoradId() {
+    public List<Double> getNoradId() {
         return noradId;
     }
 
-    public void setNoradId(List<Integer> noradId) {
+    public void setNoradId(List<Double> noradId) {
         this.noradId = noradId;
     }
 
@@ -97,11 +97,11 @@ public class Payload {
         this.payloadType = payloadType;
     }
 
-    public Integer getPayloadMassKg() {
+    public Double getPayloadMassKg() {
         return payloadMassKg;
     }
 
-    public void setPayloadMassKg(Integer payloadMassKg) {
+    public void setPayloadMassKg(Double payloadMassKg) {
         this.payloadMassKg = payloadMassKg;
     }
 

@@ -1,5 +1,5 @@
 
-package in.vivekchoudhary.com.deliberr_app.model.pojo;
+package in.vivekchoudhary.com.deliberr_app.model.pojo.launches;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

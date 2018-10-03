@@ -2,6 +2,7 @@ package in.vivekchoudhary.com.deliberr_app.model;
 
 import android.content.Context;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 
@@ -37,8 +38,26 @@ public class RemoteDataSource extends DataSource {
     }
 
     @Override
-    public void getData(Context context, final GetDataCallback callback) {
-        retrofit2.Call<JsonObject> call = apiService.getData();
+    public void getAllLaunches(Context context, final GetAllLaunchesCallback callback) {
+        Call<JsonArray> call = apiService.getAllLaunches();
+        call.enqueue(new retrofit2.Callback<JsonArray>() {
+            @Override
+            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonArray> call, Throwable t) {
+                callback.onFailure(t);
+            }
+        });
+    }
+
+    @Override
+    public void getOneRocket(Context context, final String rocket_id, final GetOneRocketCallback callback) {
+        Call<JsonObject> call = apiService.getOneRocket(rocket_id);
         call.enqueue(new retrofit2.Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

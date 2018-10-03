@@ -2,7 +2,7 @@ package in.vivekchoudhary.com.deliberr_app.presenter.contracts;
 
 import android.content.Context;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import in.vivekchoudhary.com.deliberr_app.util.mvp.IBasePresenter;
 import in.vivekchoudhary.com.deliberr_app.util.mvp.IBaseView;
@@ -16,7 +16,7 @@ public interface MainActivityContract {
 
     interface View extends IBaseView {
 
-        void showData(JsonObject jsonObject);
+        void showData(JsonArray jsonObject);
 
         void showError(Throwable throwable);
     }

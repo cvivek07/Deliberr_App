@@ -2,12 +2,16 @@ package in.vivekchoudhary.com.deliberr_app.view.fragments;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.util.Linkify;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,32 +19,38 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import in.vivekchoudhary.com.deliberr_app.R;
-import in.vivekchoudhary.com.deliberr_app.model.pojo.JsonRoot;
+import in.vivekchoudhary.com.deliberr_app.model.DataRepository;
+import in.vivekchoudhary.com.deliberr_app.model.pojo.launches.Launch;
+import in.vivekchoudhary.com.deliberr_app.model.pojo.one_rocket.OneRocket;
+import in.vivekchoudhary.com.deliberr_app.presenter.DetailFragmentPresenter;
+import in.vivekchoudhary.com.deliberr_app.presenter.contracts.DetailFragmentContract;
+import in.vivekchoudhary.com.deliberr_app.util.RetrofitBuilder;
+import in.vivekchoudhary.com.deliberr_app.util.MainUiThread;
+import in.vivekchoudhary.com.deliberr_app.util.ThreadExecutor;
 import in.vivekchoudhary.com.deliberr_app.util.Util;
+import in.vivekchoudhary.com.deliberr_app.view.activities.MainActivity;
 
-/**
- * Created by cvivek on 24-09-2018.
- */
 
-public class DetailFragment extends Fragment implements View.OnClickListener {
+public class DetailFragment extends Fragment implements View.OnClickListener, DetailFragmentContract.View {
 
-    private JsonRoot jsonRoot;
+    private Launch launch;
     private TextView mFlightno, mMissionname, mLaunchDate, mWikipedia, mYouttube, mCustInfo, mRocketName, mDescription,
             mWikipediaRocket, mEngineType, mEngineVersion, mLandingLegsNo, mLandingLegsMaterial;
     private static final String SAVE_STATE = "saved data";
 
+private  DetailFragmentContract.Presenter presenter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
 
@@ -51,9 +61,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.detail_fragment, container, false);
 
         if(savedInstanceState ==null){
-            jsonRoot = getArguments().getParcelable(LaunchFragment.DETAIL_DATA);
+            launch = getArguments().getParcelable(LaunchFragment.DETAIL_DATA);
         } else {
-            jsonRoot = savedInstanceState.getParcelable(SAVE_STATE);
+            launch = savedInstanceState.getParcelable(SAVE_STATE);
         }
 
         mFlightno = view.findViewById(R.id.flightnumber);
@@ -71,58 +81,37 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         mEngineVersion = view.findViewById(R.id.enginever);
         mLandingLegsNo = view.findViewById(R.id.legsnumber);
         mLandingLegsMaterial = view.findViewById(R.id.legsmat);
-        if(jsonRoot !=null) showData();
+        if(launch !=null) showData();
+        ThreadExecutor threadExecutor = ThreadExecutor.getInstance();
+        MainUiThread mainUiThread = MainUiThread.getInstance();
+        DataRepository dataRepository = RetrofitBuilder.provideDataRepository(mainUiThread,
+                threadExecutor);
+        presenter = new DetailFragmentPresenter(this, dataRepository, threadExecutor, mainUiThread);
+        presenter.getOneRocket(getContext(), launch.getRocket().getRocketId());
         return view;
     }
 
     private void showData() {
-        mFlightno.setText(String.valueOf(jsonRoot.getFlightNumber()));
-        mMissionname.setText(String.valueOf(jsonRoot.getMissionName()));
-        mLaunchDate.setText(String.valueOf(Util.getUTCTime(jsonRoot.getLaunchDateUtc())));
-        mWikipedia.setText(jsonRoot.getLinks().getWikipedia());
+        mFlightno.setText(String.valueOf(launch.getFlightNumber()));
+        mMissionname.setText(String.valueOf(launch.getMissionName()));
+        mLaunchDate.setText(String.valueOf(Util.getUTCTime(launch.getLaunchDateUtc())));
+        mWikipedia.setText(launch.getLinks().getWikipedia());
         Linkify.addLinks(mWikipedia, Linkify.WEB_URLS);
-        mYouttube.setText(jsonRoot.getLinks().getVideoLink());
+        mYouttube.setText(launch.getLinks().getVideoLink());
         Linkify.addLinks(mYouttube, Linkify.ALL);
 
         StringBuilder s = new StringBuilder();
-        for (int i = 0; i < jsonRoot.getRocket().getFirstStage().getCores().size(); i++) {
-            String s1 = String.valueOf(jsonRoot.getRocket().getSecondStage().getPayloads().get(i).getCustomers());
+        for (int i = 0; i < launch.getRocket().getFirstStage().getCores().size(); i++) {
+            String s1 = String.valueOf(launch.getRocket().getSecondStage().getPayloads().get(i).getCustomers());
             String string = String.valueOf(s1.replaceAll(Pattern.quote("["),"").replaceAll(Pattern.quote("]"), ""));
             s.append(string);
             mCustInfo.setText(s);
         }
 
-        mRocketName.setText(String.valueOf(jsonRoot.getRocket().getRocketName()));
-        mDescription.setText(jsonRoot.getDetails());
-        mWikipediaRocket.setText(jsonRoot.getLinks().getWikipedia());
+        mRocketName.setText(String.valueOf(launch.getRocket().getRocketName()));
+        mDescription.setText(launch.getDetails());
+        mWikipediaRocket.setText(launch.getLinks().getWikipedia());
         Linkify.addLinks(mWikipediaRocket, Linkify.WEB_URLS);
-
-        StringBuilder strbldr = new StringBuilder();
-        for (int i = 0; i < jsonRoot.getRocket().getFirstStage().getCores().size(); i++) {
-            String string = jsonRoot.getRocket().getFirstStage().getCores().get(i).getCoreSerial();
-            strbldr.append(string);
-            mEngineType.setText(strbldr);
-        }
-        StringBuilder strbldr1 = new StringBuilder();
-        for (int i = 0; i < jsonRoot.getRocket().getFirstStage().getCores().size(); i++) {
-            String string = String.valueOf(jsonRoot.getRocket().getFirstStage().getCores().get(i).getFlight());
-            strbldr1.append(string);
-            mEngineVersion.setText(strbldr1);
-        }
-
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < jsonRoot.getRocket().getFirstStage().getCores().size(); i++) {
-            String string = jsonRoot.getRocket().getFirstStage().getCores().get(i).getLandingType();
-            stringBuilder.append(string);
-            mLandingLegsNo.setText(stringBuilder);
-        }
-        StringBuilder stringBuilder1 = new StringBuilder();
-        for (int i = 0; i < jsonRoot.getRocket().getFirstStage().getCores().size(); i++) {
-            String string = jsonRoot.getRocket().getFirstStage().getCores().get(i).getLandingVehicle();
-            stringBuilder1.append(string);
-            mLandingLegsMaterial.setText(stringBuilder1);
-        }
-
     }
 
     @Override
@@ -161,7 +150,34 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(SAVE_STATE, jsonRoot);
+        outState.putParcelable(SAVE_STATE, launch);
     }
 
+    @Override
+    public void showToastMessage(String message) {
+
+    }
+
+    @Override
+    public void showOneRocket(JsonObject jsonObject) {
+        Gson gson =new Gson();
+        OneRocket rocket = gson.fromJson(jsonObject.toString(), OneRocket.class);
+        mEngineType.setText(String.valueOf(rocket.getEngines().getType()));
+        mEngineVersion.setText(String.valueOf(rocket.getEngines().getVersion()));
+        if(rocket.getLandingLegs().getMaterial()!=null) {
+            mLandingLegsMaterial.setText(String.valueOf(rocket.getLandingLegs().getMaterial()));
+        } else {
+            mLandingLegsMaterial.setText(getContext().getString(R.string.unavailable));
+        }
+        if(rocket.getLandingLegs().getNumber()!=null) {
+            mLandingLegsNo.setText(String.valueOf(rocket.getLandingLegs().getNumber()));
+        } else {
+            mLandingLegsNo.setText(getContext().getString(R.string.unavailable));
+        }
+    }
+
+    @Override
+    public void showError(Throwable throwable) {
+
+    }
 }

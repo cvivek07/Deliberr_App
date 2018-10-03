@@ -2,8 +2,8 @@ package in.vivekchoudhary.com.deliberr_app.model;
 
 import android.content.Context;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 
 
 import in.vivekchoudhary.com.deliberr_app.util.MainUiThread;
@@ -23,7 +23,15 @@ public abstract class DataSource {
         this.threadExecutor = threadExecutor;
     }
 
-    public interface GetDataCallback {
+    public interface GetAllLaunchesCallback {
+        void onSuccess(JsonArray jsonData);
+
+        void onFailure(Throwable throwable);
+
+        void onNetworkFailure();
+    }
+
+    public interface GetOneRocketCallback {
         void onSuccess(JsonObject jsonData);
 
         void onFailure(Throwable throwable);
@@ -31,5 +39,8 @@ public abstract class DataSource {
         void onNetworkFailure();
     }
 
-    public abstract void getData(Context context, GetDataCallback callback);
+
+    public abstract void getAllLaunches(Context context, GetAllLaunchesCallback callback);
+
+    public abstract void getOneRocket(Context context, String rocket_id, GetOneRocketCallback callback);
 }

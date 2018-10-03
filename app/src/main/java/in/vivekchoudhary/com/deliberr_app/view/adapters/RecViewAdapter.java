@@ -5,13 +5,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import in.vivekchoudhary.com.deliberr_app.R;
-import in.vivekchoudhary.com.deliberr_app.model.pojo.JsonRoot;
+import in.vivekchoudhary.com.deliberr_app.model.pojo.launches.Launch;
 
 /**
  * Created by cvivek on 17-09-2018.
@@ -19,13 +20,13 @@ import in.vivekchoudhary.com.deliberr_app.model.pojo.JsonRoot;
 
 public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.ViewHolder> {
 
-    private JsonRoot mJsonRoot;
+    private List<Launch> launchList = new ArrayList<>();
     private Context mContext;
-    private int pos;
 
-    public RecViewAdapter(Context context, JsonRoot myDataset) {
+
+    public RecViewAdapter(Context context, List<Launch> myDataset) {
         mContext = context;
-        mJsonRoot = myDataset;
+        launchList = myDataset;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -51,12 +52,12 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        if (mJsonRoot != null)
-            holder.mLaunchName.setText("Launch One(Mission Name: " + mJsonRoot.getMissionName() + ")");
+        if (launchList.size()>0 && launchList!=null)
+            holder.mLaunchName.setText(launchList.get(position).getMissionName() + ", " + launchList.get(position).getLaunchYear());
     }
 
     @Override
     public int getItemCount() {
-        return 1;
+        return launchList.size();
     }
 }

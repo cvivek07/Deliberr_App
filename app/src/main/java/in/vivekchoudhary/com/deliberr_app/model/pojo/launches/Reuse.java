@@ -1,5 +1,5 @@
 
-package in.vivekchoudhary.com.deliberr_app.model.pojo;
+package in.vivekchoudhary.com.deliberr_app.model.pojo.launches;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

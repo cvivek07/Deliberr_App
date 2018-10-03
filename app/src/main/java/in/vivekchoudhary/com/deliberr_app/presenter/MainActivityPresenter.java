@@ -2,7 +2,7 @@ package in.vivekchoudhary.com.deliberr_app.presenter;
 
 import android.content.Context;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import in.vivekchoudhary.com.deliberr_app.model.DataRepository;
 import in.vivekchoudhary.com.deliberr_app.model.DataSource;
@@ -35,9 +35,9 @@ public class MainActivityPresenter extends BasePresenter<MainActivityContract.Vi
             return;
         }
 
-        dataRepository.getData(context, new DataSource.GetDataCallback() {
+        dataRepository.getAllLaunches(context, new DataSource.GetAllLaunchesCallback() {
             @Override
-            public void onSuccess(JsonObject jsonData) {
+            public void onSuccess(JsonArray jsonData) {
                 if (view != null) {
                     view.showData(jsonData);
                 }

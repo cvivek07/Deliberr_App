@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by cvivek on 10-09-2018.
  */
 
-public class Injection {
+public class RetrofitBuilder {
     public static DataRepository provideDataRepository(MainUiThread mainUiThread,
                                                        ThreadExecutor threadExecutor) {
 

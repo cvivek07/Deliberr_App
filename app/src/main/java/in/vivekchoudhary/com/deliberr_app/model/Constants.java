@@ -6,5 +6,5 @@ package in.vivekchoudhary.com.deliberr_app.model;
 
 public class Constants {
    // public static final String BASE_API_URL = "http://www.mocky.io/v2/";
-    public static final String BASE_API_URL = "https://api.spacexdata.com/v2/launches/";
+    public static final String BASE_API_URL = "https://api.spacexdata.com/v3/";
 }
